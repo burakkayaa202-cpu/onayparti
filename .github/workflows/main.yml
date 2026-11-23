@@ -110,8 +110,10 @@ jobs:
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
               <application
                   android:label="Onay Parti"
+                  android:usesCleartextTraffic="true"
                   android:theme="@style/Theme.Material3.DayNight.NoActionBar">
                   <activity
                       android:name=".MainActivity"
@@ -133,55 +135,55 @@ jobs:
 
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="center"
-              android:padding="24dp">
+              android:layout_height="match_parent">
 
-              <TextView
-                  android:id="@+id/txtAppTitle"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="Onay Parti"
-                  android:textSize="28sp"
-                  android:textStyle="bold" />
+              <WebView
+                  android:id="@+id/webView"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent" />
 
-              <Button
-                  android:id="@+id/btnAction"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="20dp"
-                  android:text="Giriş / Devam" />
-
-          </LinearLayout>
+          </FrameLayout>
           EOF
 
           cat << 'EOF' > app/src/main/java/com/onayparti/app/MainActivity.java
           package com.onayparti.app;
 
           import android.os.Bundle;
-          import android.widget.Button;
-          import android.widget.TextView;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import androidx.activity.OnBackPressedCallback;
           import androidx.appcompat.app.AppCompatActivity;
 
           public class MainActivity extends AppCompatActivity {
 
-              private int sayac = 0;
+              private static final String TARGET_URL = "https://onayparti.blogspot.com/";
+              private WebView webView;
 
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
                   setContentView(R.layout.activity_main);
 
-                  TextView txtAppTitle = findViewById(R.id.txtAppTitle);
-                  Button btnAction = findViewById(R.id.btnAction);
+                  webView = findViewById(R.id.webView);
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
 
-                  txtAppTitle.setText("Onay Parti");
-                  btnAction.setOnClickListener(v -> {
-                      sayac++;
-                      btnAction.setText("Onay Parti (" + sayac + ")");
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl(TARGET_URL);
+
+                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                      @Override
+                      public void handleOnBackPressed() {
+                          if (webView.canGoBack()) {
+                              webView.goBack();
+                          } else {
+                              finish();
+                          }
+                      }
                   });
               }
           }
