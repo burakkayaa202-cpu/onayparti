@@ -45,6 +45,18 @@ jobs:
           mkdir -p app/src/main/java/com/onayparti/app
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/mipmap-mdpi
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi
+          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-xxxhdpi
+
+          if [ -f "logo.png" ]; then
+            for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+              cp logo.png "app/src/main/res/$d/ic_launcher.png"
+              cp logo.png "app/src/main/res/$d/ic_launcher_round.png"
+            done
+          fi
 
           cat << 'EOF' > gradle.properties
           android.useAndroidX=true
@@ -113,6 +125,8 @@ jobs:
               <uses-permission android:name="android.permission.INTERNET" />
               <application
                   android:label="Onay Parti"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher_round"
                   android:usesCleartextTraffic="true"
                   android:theme="@style/Theme.Material3.DayNight.NoActionBar">
                   <activity
