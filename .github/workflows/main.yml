@@ -46,6 +46,10 @@ jobs:
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
 
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          EOF
+
           cat << 'EOF' > settings.gradle
           rootProject.name = "Onay Parti"
           include ':app'
